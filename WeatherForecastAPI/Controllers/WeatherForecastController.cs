@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Data;
 using System.Data.SqlClient;
+using WeatherForecastAPI.Model;
 
 namespace WeatherForecastAPI.Controllers
 {
@@ -37,6 +38,28 @@ namespace WeatherForecastAPI.Controllers
                 }
             }
             return new JsonResult(table);
+        }
+
+        [Route("DailyForecast")]
+        [HttpGet]
+        public async Task<JsonResult> GetDailyForecast(string lat, string lon)
+        {
+            var oneCallApiResponse = new OneCallApiResponse();
+            using (var httpClient = new HttpClient())
+            {
+                string apiLink = _configuration["OpenWeatherApi:BaseAddress"].ToString() + $"&lat={lat}&lon={lon}";
+                using (var response = await httpClient.GetAsync(apiLink))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    oneCallApiResponse = JsonConvert.DeserializeObject< OneCallApiResponse>(apiResponse);
+                }
+            }
+            if (oneCallApiResponse != null)
+            {
+                oneCallApiResponse.daily.RemoveRange(4, 4);
+                return new JsonResult(oneCallApiResponse.daily);
+            }
+            return new JsonResult(new DailyForecast());
         }
     }
 }
