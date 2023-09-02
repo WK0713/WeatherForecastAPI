@@ -12,4 +12,8 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Icons\Weather\01d.png" />
+  </ItemGroup>
+
 </Project>
